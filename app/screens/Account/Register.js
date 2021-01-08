@@ -12,7 +12,7 @@ export default function Register() {
         contentContainerStyle={styles.keyBoardContainer}
     >
         <Image
-            source={require("../../../assets/img/5-tenedores-letras-icono-logo.png")}
+            source={require("../../../assets/img/welcome.png")}
             resizeMode="contain"
             style={styles.logo}
         />

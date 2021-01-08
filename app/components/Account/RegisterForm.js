@@ -1,35 +1,48 @@
 import React, { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { Input, Icon, Button } from "react-native-elements";
+import Loading from "../Loading";
 import { validateEmail } from "../../utils/validations";
 import { size, isEmpty } from "lodash";
 import * as firebase from "firebase";
+import { useNavigation } from "@react-navigation/native";
 
 export default function RegisterForm(props) {
     const { toastRef } = props;
-
     const [showPassword, setShowPassword] = useState(false);
     const [showRepeatPassword, setShowRepeatPassword] = useState(false);
-    const [formData, setFormData] = useState(defaultFormValue);
+    const [formData, setFormData] = useState(defaultFormValue());
+    const [loading, setLoading] = useState(false);
+    const navigation = useNavigation();
 
     const onSubmit = () => {
         if(
             isEmpty(formData.email) || 
             isEmpty(formData.password) || 
-            isEmpty(formData.repeatPassword)) return toastRef.current.show("Todos los campos obligatorios...");
+            isEmpty(formData.repeatPassword)) return toastRef.current.show("Todos los campos obligatorios.");
         if (!validateEmail(formData.email)) return toastRef.current.show("Correo inválido.");
-        if (formData.password != formData.repeatPassword) return toastRef.current.show("Las contraseñas no coinciden...");
+        if (formData.password != formData.repeatPassword) return toastRef.current.show("Las contraseñas no coinciden.");
         if (size(formData.password) < 6) return toastRef.current.show("La contraseña debe contener al menos 6 caracteres.")
 
+        setLoading(true);
         firebase
             .auth()
             .createUserWithEmailAndPassword(formData.email, formData.password)
-            .then(response => {
-                console.log(response);
+            .then(() => {
+                setLoading(false);
+                navigation.navigate("account");
             })
-            .catch(err => {
-                console.log(err);
-            })
+            .catch(() => {
+                setLoading(false);
+                toastRef.current.show("El email ya está en uso.");
+            });
+
+
+        // const credentials = firebase.auth.FacebookAuthProvider.credential("");
+        // firebase
+        // .auth().signInWithCredential(credentials)
+        // .then(() => {})
+        // .catch(() => {})
     }
 
     const onChange = (e, type) => {
@@ -86,6 +99,7 @@ export default function RegisterForm(props) {
                 buttonStyle={styles.btnRegister}
                 onPress={onSubmit}
             />
+            <Loading isVisible={loading} text="Creando cuenta" />
         </View>
     );
 }

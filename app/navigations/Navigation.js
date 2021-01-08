@@ -9,7 +9,6 @@ import FavoriteStack from "../navigations/FavoriteStack";
 import TopRestaurantsStack from "../navigations/TopRestaurantsStack";
 import SearchStack from "../navigations/SearchStack";
 import AccountStack from "../navigations/AccountStack";
-import { Switch } from "react-native-gesture-handler";
 
 const Tab = createBottomTabNavigator();
 
