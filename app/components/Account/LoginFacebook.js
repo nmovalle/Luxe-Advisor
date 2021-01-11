@@ -23,12 +23,11 @@ export default function LoginFacebook(props) {
                 type,
                 token
             } = await Facebook.logInWithReadPermissionsAsync({
-                appId: FacebookApi.application_id,  
                 permissions: FacebookApi.permissions
             });
 
-
             console.log(token)
+            toastRef.current.show(token)
 
             if (type === 'success') {
                 const credentials = firebase.auth.FacebookAuthProvider.credential(token);
@@ -47,7 +46,7 @@ export default function LoginFacebook(props) {
             }
                 if (type === 'cancel') {
                     setLoading(false);
-                    console.log("login facebook cancel...")
+                    toastRef.current.show("Login Facebook Cancel.")
             }
             
         } catch (error) {
