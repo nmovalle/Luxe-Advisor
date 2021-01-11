@@ -5,6 +5,7 @@ import AvatarDefault from "../../../assets/img/avatar-default.jpg"
 
 export default function InfoUser(props) {
     const { userInfo: { photoURL, displayName, email } } = props;
+    console.log(props.userInfo)
     
     return (
         <View style={styles.viewUserInfo}>

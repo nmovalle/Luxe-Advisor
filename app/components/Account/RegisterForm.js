@@ -95,7 +95,7 @@ export default function RegisterForm(props) {
             />
             <Button 
                 title="Unirse"
-                style={styles.btnContainerRegister}
+                containerStyle={styles.btnContainerRegister}
                 buttonStyle={styles.btnRegister}
                 onPress={onSubmit}
             />

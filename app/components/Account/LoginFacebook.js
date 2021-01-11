@@ -26,11 +26,10 @@ export default function LoginFacebook(props) {
                 permissions: FacebookApi.permissions
             });
 
-            console.log(token)
-            toastRef.current.show(token)
-
             if (type === 'success') {
                 const credentials = firebase.auth.FacebookAuthProvider.credential(token);
+
+                console.log(credentials)
                 firebase
                     .auth()
                     .signInWithCredential(credentials)
