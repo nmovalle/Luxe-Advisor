@@ -23,9 +23,8 @@ export default function UserLogged() {
 
     return (
         <View style={styles.viewUserInfo}>
-
             {
-                userInfo && <InfoUser userInfo={userInfo} />
+                userInfo && <InfoUser toastRef={toastRef} userInfo={userInfo} />
             }
 
             <Text>AccountOptions...</Text>

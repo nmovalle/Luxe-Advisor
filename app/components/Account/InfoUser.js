@@ -1,12 +1,46 @@
 import React from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { Linking, StyleSheet, View, Text } from 'react-native';
 import { Avatar } from "react-native-elements";
 import AvatarDefault from "../../../assets/img/avatar-default.jpg"
+import * as firebase from "firebase";
+import * as Permissions from "expo-permissions";
+import * as ImagePicker from "expo-image-picker";
 
 export default function InfoUser(props) {
-    const { userInfo: { photoURL, displayName, email } } = props;
-    console.log(props.userInfo)
-    
+    const { 
+        userInfo: { photoURL, displayName, email },
+        toastRef
+    } = props;
+
+    const openAppSettings = () => {
+        if (Platform.OS === 'ios') {
+            Linking.openURL("app-settings:");
+        } else {
+            RNAndroidOpenSettings.appDetailsSettings();
+        }
+    }
+
+    const changeAvatar = async () => {
+        const { permissions } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+        const resultPermissionMediaLibrary = permissions.mediaLibrary.status;
+        
+        if (resultPermissionMediaLibrary === "denied") {
+            toastRef.current.show("Luxe Advisor requiere del acceso a la cámara para cambiar la imágen de tu Perfil. Por favor ajusta tu configuración para permitir servicios de cámara.");
+            openAppSettings();
+        }
+        
+        const resultImagePicker = await ImagePicker.launchImageLibraryAsync({
+            allowsEditing: true,
+            aspect: [4, 3]
+        });
+
+        if (!resultImagePicker.cancelled) {
+
+        }
+
+        console.log("resultImagePicker", resultImagePicker)
+    }
+
     return (
         <View style={styles.viewUserInfo}>
             <Avatar
@@ -14,6 +48,7 @@ export default function InfoUser(props) {
                 size="large"
                 showEditButton
                 containerStyle={styles.userInfoAvatar}
+                onEditPress={changeAvatar}
                 source={
                     photoURL ? 
                     { uri: photoURL } : 
