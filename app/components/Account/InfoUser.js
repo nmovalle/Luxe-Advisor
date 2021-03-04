@@ -8,8 +8,10 @@ import * as ImagePicker from "expo-image-picker";
 
 export default function InfoUser(props) {
     const { 
-        userInfo: { photoURL, displayName, email },
-        toastRef
+        userInfo: { uid, photoURL, displayName, email },
+        toastRef,
+        setLoading,
+        setLoadingText
     } = props;
 
     const openAppSettings = () => {
@@ -19,6 +21,9 @@ export default function InfoUser(props) {
             RNAndroidOpenSettings.appDetailsSettings();
         }
     }
+
+    //setLoading(true);
+    //setLoadingText("Actualizando avatar");
 
     const changeAvatar = async () => {
         const { permissions } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
@@ -34,11 +39,44 @@ export default function InfoUser(props) {
             aspect: [4, 3]
         });
 
-        if (!resultImagePicker.cancelled) {
+        if (resultImagePicker.cancelled) return toastRef.current.show("Se ha cerrado la selección de imágenes.");
 
-        }
+        uploadImage(resultImagePicker.uri)
+            .then(() => {
+                updatePhotoUrl();
+            })
+            .catch(() => {
+                setLoading(false);
+                toastRef.current.show("Error al actualiar avatar.")
+            })
+    }
 
-        console.log("resultImagePicker", resultImagePicker)
+    const uploadImage = async uri => {
+        setLoadingText("Actualizando avatar");
+        setLoading(true);
+
+        const response = await fetch(uri);
+        const blob = await response.blob();
+        const ref = firebase.storage().ref().child(`avatar/${uid}`);
+
+        return ref.put(blob);
+    }
+
+    const updatePhotoUrl = () => {
+        firebase
+            .storage()
+            .ref(`avatar/${uid}`)
+            .getDownloadURL()
+            .then(async res => {
+                const update = {
+                    photoURL: res
+                };
+                await firebase.auth().currentUser.updateProfile(update);
+                setLoading(false);
+            })
+            .catch(() => {
+                toastRef.current.show("Error al actualiar avatar.")
+            })
     }
 
     return (
